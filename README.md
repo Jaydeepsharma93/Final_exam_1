@@ -12,9 +12,6 @@
 <img src="https://github.com/user-attachments/assets/0123b7f3-9716-43e6-a5aa-c3767a13fd43" width = 70%>
 
 
-<video src="" width = 32%>
-
-
-
+<video src="https://github.com/user-attachments/assets/e6b4ed5e-d429-4596-9150-ed1466a524be" width = 32%>
 
 
