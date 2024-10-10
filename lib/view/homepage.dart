@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import '../controller/homecontroller.dart';
 import '../model/modelclass.dart';
 
@@ -11,40 +10,65 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Products',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
+        title: Text(
+          'Products',
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black54),
+        ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/cart');
+            },
+            icon: Icon(Icons.shopping_cart),
+          ),
+        ],
         backgroundColor: Colors.deepPurpleAccent.shade100,
       ),
-      body: Obx(() {
-        return ListView.builder(
-          itemCount: controller.products.length,
-          itemBuilder: (context, index) {
-            final product = controller.products[index];
-            return ListTile(
-              title: Text(product.name),
-              subtitle: Text('\$${product.price.toStringAsFixed(2)}'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.add_shopping_cart),
-                    onPressed: () =>
-                        controller.addToCart(product), // Add to cart
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () => showEditProductDialog(context, product),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () => controller.deleteProduct(product.id),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      }),
+      body: StreamBuilder<List<Product>>(
+        stream: controller.fetchProducts(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator()); // Loading indicator
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}')); // Error message
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No products found.')); // No data message
+          }
+
+          final products = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: products.length,
+            itemBuilder: (context, index) {
+              final product = products[index];
+              return ListTile(
+                title: Text(product.name),
+                subtitle: Text('\$${product.price.toStringAsFixed(2)}'),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.add_shopping_cart),
+                      onPressed: () => controller.addToCart(product),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () => showEditProductDialog(context, product),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () => controller.deleteProduct(product.id),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showAddProductDialog(context),
         child: Icon(Icons.add),
@@ -78,8 +102,7 @@ class HomePage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                if (nameController.text.isNotEmpty &&
-                    priceController.text.isNotEmpty) {
+                if (nameController.text.isNotEmpty && priceController.text.isNotEmpty) {
                   double price = double.parse(priceController.text);
                   controller.addProduct(nameController.text, price);
                   Get.back();
@@ -94,10 +117,8 @@ class HomePage extends StatelessWidget {
   }
 
   void showEditProductDialog(BuildContext context, Product product) {
-    TextEditingController nameController =
-        TextEditingController(text: product.name);
-    TextEditingController priceController =
-        TextEditingController(text: product.price.toString());
+    TextEditingController nameController = TextEditingController(text: product.name);
+    TextEditingController priceController = TextEditingController(text: product.price.toString());
 
     showDialog(
       context: context,
@@ -121,11 +142,9 @@ class HomePage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                if (nameController.text.isNotEmpty &&
-                    priceController.text.isNotEmpty) {
+                if (nameController.text.isNotEmpty && priceController.text.isNotEmpty) {
                   double price = double.parse(priceController.text);
-                  controller.editProduct(
-                      product.id, nameController.text, price);
+                  controller.editProduct(product.id, nameController.text, price);
                   Get.back();
                 }
               },

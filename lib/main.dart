@@ -1,5 +1,6 @@
 import 'package:final_exam_1/view/cartpage.dart';
 import 'package:final_exam_1/view/homepage.dart';
+import 'package:final_exam_1/view/splashpage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       getPages: [
-        GetPage(name: '/', page: () => HomePage(),),
+        GetPage(name: '/', page: () => SplashPage(),),
         GetPage(name: '/cart', page: () => CartPage(),),
         GetPage(name: '/home', page: () => HomePage(),)
       ],
